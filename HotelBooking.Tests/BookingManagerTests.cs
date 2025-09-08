@@ -98,13 +98,68 @@ public class BookingManagerTests
     [Fact]
     public async void FindAvailableRoom_ShouldReturnRoomId_WhenRoomFree()
     {
-        throw new NotImplementedException();
+        var rooms = new List<Room>
+        {
+            new Room { Id = 1 },
+            new Room { Id = 2 }
+        };
+
+        var bookings = new List<Booking>
+        {
+            new Booking
+            {
+                RoomId = 1,
+                StartDate = DateTime.Today.AddDays(2),
+                EndDate = DateTime.Today.AddDays(4),
+                IsActive = true
+            }
+        };
+        roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+        
+        var startDate = DateTime.Today.AddDays(2);
+        var endDate = DateTime.Today.AddDays(4);
+        
+        var result = await bookingManager.FindAvailableRoom(startDate, endDate);
+        
+        Assert.Equal(2, result);
     }
 
     [Fact]
     public async void FindAvailableRoom_ShouldReturnMinusOne_WhenAllRoomsBooked()
-    {
-        throw new NotImplementedException();
+    {        
+        var rooms = new List<Room>
+        {
+            new Room { Id = 1 },
+            new Room { Id = 2 }
+        };
+
+        var bookings = new List<Booking>
+        {
+            new Booking
+            {
+                RoomId = 1,
+                StartDate = DateTime.Today.AddDays(2),
+                EndDate = DateTime.Today.AddDays(4),
+                IsActive = true
+            },
+            new Booking
+            {
+                RoomId = 2,
+                StartDate = DateTime.Today.AddDays(2),
+                EndDate = DateTime.Today.AddDays(4),
+                IsActive = true
+            }
+        };
+        roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+        
+        var startDate = DateTime.Today.AddDays(2);
+        var endDate = DateTime.Today.AddDays(4);
+        
+        var result = await bookingManager.FindAvailableRoom(startDate, endDate);
+        
+        Assert.Equal(-1, result);
     }
 
     [Fact]
