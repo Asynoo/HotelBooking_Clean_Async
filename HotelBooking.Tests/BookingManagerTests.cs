@@ -14,9 +14,10 @@ public class BookingManagerTests
         bookingManager = new BookingManager(bookingRepoMock.Object, roomRepoMock.Object);
     }
 
-    // -------------------------------
-    // CreateBooking tests
-    // -------------------------------
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //                         CreateBooking Tests
+    ////////////////////////////////////////////////////////////////////////////////
     [Fact]
     public async void CreateBooking_ShouldWork_WhenRoomFree()
     {
@@ -90,9 +91,10 @@ public class BookingManagerTests
         bookingRepoMock.Verify(b => b.AddAsync(It.IsAny<Booking>()), Times.Never);
     }
 
-    // -------------------------------
-    // FindAvailableRoom tests
-    // -------------------------------
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //                         FindAvailableRoom Tests
+    ////////////////////////////////////////////////////////////////////////////////
     [Fact]
     public async void FindAvailableRoom_ShouldReturnRoomId_WhenRoomFree()
     {
@@ -111,9 +113,10 @@ public class BookingManagerTests
         throw new NotImplementedException();
     }
 
-    // -------------------------------
-    // Data-driven test example
-    // -------------------------------
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //                         Data-Driven Test
+    ////////////////////////////////////////////////////////////////////////////////
     [Theory]
     [InlineData(1, 3)]
     [InlineData(2, 5)]
@@ -122,10 +125,11 @@ public class BookingManagerTests
     {
         throw new NotImplementedException();
     }
+    
 
-    // -------------------------------
-    // GetFullyOccupiedDates tests
-    // -------------------------------
+    ////////////////////////////////////////////////////////////////////////////////
+    //                         GetFullyOccupiedDates Tests
+    ////////////////////////////////////////////////////////////////////////////////
     [Fact]
     public async void GetFullyOccupiedDates_ShouldBeEmpty_WhenNoBookings()
     {
