@@ -10,7 +10,9 @@ public class BookingManagerTests
 
         public BookingManagerTests()
         {
-            // TODO: Initialize mocks and BookingManager
+            bookingRepoMock = new Mock<IRepository<Booking>>();
+            roomRepoMock = new Mock<IRepository<Room>>();
+            bookingManager = new BookingManager(bookingRepoMock.Object, roomRepoMock.Object);
         }
 
         // -------------------------------
@@ -19,19 +21,66 @@ public class BookingManagerTests
         [Fact]
         public async void CreateBooking_ShouldWork_WhenRoomFree()
         {
-            // TODO: Implement this test
+            var rooms = new List<Room>
+            {
+                new Room { Id = 1 }
+            };
+
+            var bookings = new List<Booking>();
+
+            roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+            bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+
+            var booking = new Booking
+            {
+                CustomerId = 1,
+                StartDate = DateTime.Today.AddDays(2),
+                EndDate = DateTime.Today.AddDays(4)
+            };
+            var result = await bookingManager.CreateBooking(booking);
+            Assert.True(result);
+            Assert.True(booking.IsActive);
+            bookingRepoMock.Verify(b => b.AddAsync(It.IsAny<Booking>()), Times.Once);
+            Assert.Equal(1, booking.RoomId);
         }
 
         [Fact]
         public async void CreateBooking_ShouldFail_WhenNoRoomsFree()
         {
-            // TODO: Implement this test
+            var rooms = new List<Room>
+            {
+                new Room { Id = 1 }
+            };
+
+            var bookings = new List<Booking>
+            {
+                new Booking
+                {
+                    RoomId = 1,
+                    IsActive = true,
+                    StartDate = DateTime.Today.AddDays(5),
+                    EndDate = DateTime.Today.AddDays(10)
+                }
+            };
+            var booking = new Booking
+            {
+                StartDate = DateTime.Today.AddDays(5),
+                EndDate = DateTime.Today.AddDays(7)
+            };
+            
+            roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+            bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+            
+            var result = await bookingManager.CreateBooking(booking);
+            
+            Assert.False(result);
+            Assert.False(booking.IsActive);
         }
 
         [Fact]
         public async void CreateBooking_ShouldHandleInvalidBooking()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         // -------------------------------
@@ -40,19 +89,19 @@ public class BookingManagerTests
         [Fact]
         public async void FindAvailableRoom_ShouldReturnRoomId_WhenRoomFree()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async void FindAvailableRoom_ShouldReturnMinusOne_WhenAllRoomsBooked()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async void FindAvailableRoom_ShouldThrow_WhenDatesInvalid()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         // -------------------------------
@@ -64,7 +113,7 @@ public class BookingManagerTests
         [InlineData(5, 5)]
         public async void FindAvailableRoom_DataDriven_Test(int startOffset, int endOffset)
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         // -------------------------------
@@ -73,24 +122,24 @@ public class BookingManagerTests
         [Fact]
         public async void GetFullyOccupiedDates_ShouldBeEmpty_WhenNoBookings()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async void GetFullyOccupiedDates_ShouldReturnDates_WhenAllRoomsFull()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async void GetFullyOccupiedDates_ShouldBeEmpty_WhenSomeRoomsFree()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async void GetFullyOccupiedDates_ShouldThrow_WhenStartAfterEnd()
         {
-            // TODO: Implement this test
+            throw new NotImplementedException();
         }
     }
