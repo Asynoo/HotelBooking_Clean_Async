@@ -19,7 +19,7 @@ public class BookingManagerTests
     //                         CreateBooking Tests
     ////////////////////////////////////////////////////////////////////////////////
     [Fact]
-    public async void CreateBooking_ShouldWork_WhenRoomFree()
+    public async Task CreateBooking_ShouldWork_WhenRoomFree()
     {
         var rooms = new List<Room>
         {
@@ -45,7 +45,7 @@ public class BookingManagerTests
     }
 
     [Fact]
-    public async void CreateBooking_ShouldFail_WhenNoRoomsFree()
+    public async Task CreateBooking_ShouldFail_WhenNoRoomsFree()
     {
         var rooms = new List<Room>
         {
@@ -78,7 +78,7 @@ public class BookingManagerTests
     }
 
     [Fact]
-    public async void CreateBooking_ShouldHandleInvalidBooking()
+    public async Task CreateBooking_ShouldHandleInvalidBooking()
     {
         var booking = new Booking
         {
@@ -96,7 +96,7 @@ public class BookingManagerTests
     //                         FindAvailableRoom Tests
     ////////////////////////////////////////////////////////////////////////////////
     [Fact]
-    public async void FindAvailableRoom_ShouldReturnRoomId_WhenRoomFree()
+    public async Task FindAvailableRoom_ShouldReturnRoomId_WhenRoomFree()
     {
         var rooms = new List<Room>
         {
@@ -126,7 +126,7 @@ public class BookingManagerTests
     }
 
     [Fact]
-    public async void FindAvailableRoom_ShouldReturnMinusOne_WhenAllRoomsBooked()
+    public async Task FindAvailableRoom_ShouldReturnMinusOne_WhenAllRoomsBooked()
     {        
         var rooms = new List<Room>
         {
@@ -163,7 +163,7 @@ public class BookingManagerTests
     }
 
     [Fact]
-    public async void FindAvailableRoom_ShouldThrow_WhenDatesInvalid()
+    public async Task FindAvailableRoom_ShouldThrow_WhenDatesInvalid()
     {
         throw new NotImplementedException();
     }
@@ -176,7 +176,7 @@ public class BookingManagerTests
     [InlineData(1, 3)]
     [InlineData(2, 5)]
     [InlineData(5, 5)]
-    public async void FindAvailableRoom_DataDriven_Test(int startOffset, int endOffset)
+    public async Task FindAvailableRoom_DataDriven_Test(int startOffset, int endOffset)
     {
         throw new NotImplementedException();
     }
@@ -186,25 +186,25 @@ public class BookingManagerTests
     //                         GetFullyOccupiedDates Tests
     ////////////////////////////////////////////////////////////////////////////////
     [Fact]
-    public async void GetFullyOccupiedDates_ShouldBeEmpty_WhenNoBookings()
+    public async Task GetFullyOccupiedDates_ShouldBeEmpty_WhenNoBookings()
     {
         throw new NotImplementedException();
     }
 
     [Fact]
-    public async void GetFullyOccupiedDates_ShouldReturnDates_WhenAllRoomsFull()
+    public async Task GetFullyOccupiedDates_ShouldReturnDates_WhenAllRoomsFull()
     {
         throw new NotImplementedException();
     }
 
     [Fact]
-    public async void GetFullyOccupiedDates_ShouldBeEmpty_WhenSomeRoomsFree()
+    public async Task GetFullyOccupiedDates_ShouldBeEmpty_WhenSomeRoomsFree()
     {
         throw new NotImplementedException();
     }
 
     [Fact]
-    public async void GetFullyOccupiedDates_ShouldThrow_WhenStartAfterEnd()
+    public async Task GetFullyOccupiedDates_ShouldThrow_WhenStartAfterEnd()
     {
         throw new NotImplementedException();
     }
