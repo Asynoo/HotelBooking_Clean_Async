@@ -165,7 +165,10 @@ public class BookingManagerTests
     [Fact]
     public async Task FindAvailableRoom_ShouldThrow_WhenDatesInvalid()
     {
-        throw new NotImplementedException();
+        var startDate = DateTime.Today.AddDays(-1);
+        var endDate = DateTime.Today;
+        
+        await Assert.ThrowsAsync<ArgumentException>(() => bookingManager.FindAvailableRoom(startDate, endDate));
     }
 
     
@@ -178,7 +181,18 @@ public class BookingManagerTests
     [InlineData(5, 5)]
     public async Task FindAvailableRoom_DataDriven_Test(int startOffset, int endOffset)
     {
-        throw new NotImplementedException();
+        var rooms = new List<Room> { new Room{ Id = 1 }, new Room { Id = 2 } };
+        var bookings = new List<Booking>();
+        
+        roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+        
+        var startDate = DateTime.Today.AddDays(startOffset);
+        var endDate = DateTime.Today.AddDays(endOffset);
+        
+        var roomId = await bookingManager.FindAvailableRoom(startDate, endDate);
+        
+        Assert.True(roomId > 0);
     }
     
 
