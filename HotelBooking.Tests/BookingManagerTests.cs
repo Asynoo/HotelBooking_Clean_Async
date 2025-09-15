@@ -202,13 +202,40 @@ public class BookingManagerTests
     [Fact]
     public async Task GetFullyOccupiedDates_ShouldBeEmpty_WhenNoBookings()
     {
-        throw new NotImplementedException();
+        var rooms = new List<Room>{ new Room { Id = 1 }, new Room { Id = 2 } };
+        roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<Booking>());
+        
+        var dates = await bookingManager.GetFullyOccupiedDates(DateTime.Today, DateTime.Today.AddDays(2));
+        
+        Assert.Empty(dates);
     }
 
     [Fact]
     public async Task GetFullyOccupiedDates_ShouldReturnDates_WhenAllRoomsFull()
     {
-        throw new NotImplementedException();
+        var rooms = new List<Room>{ new Room { Id = 1 }, new Room { Id = 2 } };
+        var bookings = new List<Booking>
+        {
+            new Booking
+            {
+                RoomId = 1, StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(2), IsActive = true
+            },
+            new Booking
+            {
+                RoomId = 2, StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(2), IsActive = true
+            }
+        };
+        
+        roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+        
+        var dates = await bookingManager.GetFullyOccupiedDates(DateTime.Today, DateTime.Today.AddDays(2));
+        
+        Assert.Equal(3, dates.Count);
+        Assert.Contains(DateTime.Today, dates);
+        Assert.Contains(DateTime.Today.AddDays(1), dates);
+        Assert.Contains(DateTime.Today.AddDays(2), dates);
     }
 
     [Fact]
