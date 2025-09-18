@@ -268,6 +268,9 @@ public class BookingManagerTests
     [Fact]
     public async Task GetFullyOccupiedDates_ShouldThrow_WhenStartAfterEnd()
     {
-        throw new NotImplementedException();
+        var startDate = DateTime.Today.AddDays(5);
+        var endDate = DateTime.Today.AddDays(3);
+        
+        await Assert.ThrowsAsync<ArgumentException>(() => bookingManager.GetFullyOccupiedDates(startDate, endDate));
     }
 }
