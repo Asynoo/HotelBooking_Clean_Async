@@ -241,7 +241,28 @@ public class BookingManagerTests
     [Fact]
     public async Task GetFullyOccupiedDates_ShouldBeEmpty_WhenSomeRoomsFree()
     {
-        throw new NotImplementedException();
+        var rooms = new List<Room>
+        {
+            new Room { Id = 1 }, 
+            new Room { Id = 2 }
+        };
+
+        var bookings = new List<Booking>
+        {
+            new Booking
+            {
+                RoomId = 1,
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(2),
+                IsActive = true
+            }
+        };
+        roomRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        bookingRepoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(bookings);
+        
+        var result = await bookingManager.GetFullyOccupiedDates(DateTime.Today, DateTime.Today.AddDays(2));
+        
+        Assert.Empty(result);
     }
 
     [Fact]
