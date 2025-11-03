@@ -15,7 +15,7 @@ jobs:
   run-postman-tests:
     runs-on: ubuntu-latest
     steps:
-      # pull the code
+
       - name: 1. Check out the code
         uses: actions/checkout@v4
 
