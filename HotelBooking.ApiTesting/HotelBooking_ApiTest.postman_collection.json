@@ -126,7 +126,7 @@
 						"exec": [
 							"// Test to check if the request body is missing customerId or roomId, should return a bad request",
 							"pm.test(\"Successful POST request\", function () {",
-							"    //pm.expect(pm.response.code).to.be(400);",
+							"    pm.expect(pm.response.code).to.be(400);",
 							"});"
 						],
 						"type": "text/javascript",
