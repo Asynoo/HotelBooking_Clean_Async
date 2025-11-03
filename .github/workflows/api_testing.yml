@@ -1,0 +1,44 @@
+name: Automated API test based on Postman
+
+on:
+  push: # when the commit pushed on this branch, trigger the actions.
+    branches: [ main ]
+  pull_request: 
+    # when the PR has to be created and the PR wishes to merge into this branch. 
+    # Once the PR created, or the PR gain a commit. trigger the actions. 
+    branches: [ miniproject_two ]
+  
+  # Manully trigger action
+  workflow_dispatch:
+
+jobs:
+  run-postman-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # pull the code
+      - name: 1. Check out the code
+        uses: actions/checkout@v4
+
+      - name: 2. Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 3. Install Newman
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: 4. Run Newman test
+        run: |
+          newman run HotelBooking.ApiTesting/HotelBooking_ApiTest.postman_collection.json \
+                 -r cli,htmlextra \
+                 --reporter-htmlextra-export postman/report.html
+      
+      # Uploade testing report
+      - name: 5. Upload testing report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-test-report
+          path: postman/report.html

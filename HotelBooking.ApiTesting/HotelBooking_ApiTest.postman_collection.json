@@ -144,7 +144,7 @@
 					]
 				}
 			},
-			"response": []
+			"response": [] 
 		},
 		{
 			"name": "Create Booking with occupied room",
