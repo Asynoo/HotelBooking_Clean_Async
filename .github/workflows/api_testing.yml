@@ -15,28 +15,67 @@ jobs:
   run-postman-tests:
     runs-on: ubuntu-latest
     steps:
-      # pull the code
+
       - name: 1. Check out the code
         uses: actions/checkout@v4
 
-      - name: 2. Setup Node.js
+      - name: 2. Setup .NET 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: 3. Restore dependencies
+        run: dotnet restore
+
+      - name: 4. Build the WebApi project
+        run: dotnet build HotelBooking.WebApi/HotelBooking.WebApi.csproj --configuration Release --no-restore
+
+      - name: 5. Start the API server
+        run: |
+          dotnet run --project HotelBooking.WebApi/HotelBooking.WebApi.csproj --configuration Release --no-build --urls "http://localhost:5000" &
+          echo $! > server.pid
+          echo "Server started with PID $(cat server.pid)"
+
+          # Wait for server to be ready (max 60 seconds)
+          echo "Waiting for server to start..."
+          for i in {1..60}; do
+            if curl -s http://localhost:5000/swagger/index.html > /dev/null; then
+              echo "Server is ready!"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "Server failed to start within 60 seconds"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: 6. Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: 3. Install Newman
+      - name: 7. Install Newman
         run: |
           npm install -g newman
           npm install -g newman-reporter-htmlextra
 
-      - name: 4. Run Newman test
+      - name: 8. Run Newman test
         run: |
           newman run HotelBooking.ApiTesting/HotelBooking_ApiTest.postman_collection.json \
                  -r cli,htmlextra \
                  --reporter-htmlextra-export postman/report.html
-      
-      # Uploade testing report
-      - name: 5. Upload testing report
+
+      - name: 9. Stop the server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then
+            kill $(cat server.pid) || true
+            echo "Server stopped"
+          fi
+
+      # Upload testing report
+      - name: 10. Upload testing report
         if: always()
         uses: actions/upload-artifact@v4
         with:

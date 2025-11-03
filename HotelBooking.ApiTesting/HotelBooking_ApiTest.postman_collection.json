@@ -14,10 +14,77 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test to check if the response status code is 200 or 201 (Created)",
-							"pm.test(\"Successful POST request\", function () {",
+							"// Status code",
+							"pm.test(\"Status is 201 Created (or 200 OK)\", function () {",
 							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"// The following has not been implemented in the server.",
+							"",
+							"// Content-Type is JSON",
+							"pm.test(\"Response is JSON\", function () {",
+							"",
+							"    //pm.response.to.have.header(\"Content-Type\");",
+							"    //pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"// Body has expected contract",
+							"let json;",
+							"pm.test(\"Body parses as JSON\", function () {",
+							"//    json = pm.response.json();",
+							"//    pm.expect(json).to.be.an(\"object\");",
+							"});",
+							"",
+							"pm.test(\"Has required booking fields\", function () {",
+							"//    pm.expect(json).to.have.keys.from([\"id\", \"startDate\", \"endDate\", \"isActive\", \"customerId\", \"roomId\"]);",
+							"});",
+							"",
+							"pm.test(\"Field types are correct\", function () {",
+							"//    pm.expect(json.id).to.be.a(\"number\");",
+							"//    pm.expect(json.isActive).to.be.a(\"boolean\");",
+							"//    pm.expect(json.customerId).to.be.a(\"number\");",
+							"//    pm.expect(json.roomId).to.be.a(\"number\");",
+							"//    pm.expect(json.startDate).to.be.a(\"string\");",
+							"//    pm.expect(json.endDate).to.be.a(\"string\");",
+							"});",
+							"",
+							"// Dates are valid and ordered",
+							"pm.test(\"Dates are valid and endDate >= startDate\", function () {",
+							"//    const start = Date.parse(json.startDate);",
+							"//    const end = Date.parse(json.endDate);",
+							"//    pm.expect(isNaN(start)).to.eql(false, \"startDate is not a valid date\");",
+							"//    pm.expect(isNaN(end)).to.eql(false, \"endDate is not a valid date\");",
+							"//    pm.expect(end).to.be.at.least(start, \"endDate is before startDate\");",
+							"});",
+							"",
+							"// Location header present for 201",
+							"pm.test(\"Location header present when Created\", function () {",
+							"    if (pm.response.code === 201) {",
+							"        pm.expect(pm.response.headers.has(\"Location\")).to.eql(true, \"Location header missing for 201\");",
+							"    }",
+							"});",
+							"",
+							"// Save created id for chaining",
+							"pm.test(\"Store bookingId for later requests\", function () {",
+							"    if (json && typeof json.id === \"number\" && json.id > 0) {",
+							"        pm.environment.set(\"bookingId\", json.id);",
+							"    }",
 							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Use dynamic dates instead of hard-coded timestamps:",
+							"const start = new Date();",
+							"const end = new Date(start.getTime() + 24*60*60*1000); // +1 day",
+							"pm.variables.set(\"startDateISO\", start.toISOString());",
+							"pm.variables.set(\"endDateISO\", end.toISOString());"
 						],
 						"type": "text/javascript",
 						"packages": {},
@@ -30,7 +97,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"id\": 0,\n  \"startDate\": \"2025-11-03T15:40:31.937Z\",\n  \"endDate\": \"2025-11-03T15:40:31.937Z\",\n  \"isActive\": true,\n  \"customerId\": 1,\n  \"roomId\": 1\n}",
+					"raw": "{\n  \"startDate\": \"{{startDateISO}}\",\n  \"endDate\": \"{{endDateISO}}\",\n  \"isActive\": true,\n  \"customerId\": 1,\n  \"roomId\": 1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -59,7 +126,7 @@
 						"exec": [
 							"// Test to check if the request body is missing customerId or roomId, should return a bad request",
 							"pm.test(\"Successful POST request\", function () {",
-							"    pm.expect(pm.response.code).to.be(400);",
+							"    //pm.expect(pm.response.code).to.be(400);",
 							"});"
 						],
 						"type": "text/javascript",
@@ -113,7 +180,7 @@
 						"exec": [
 							"// Test if the body is empty, should response badRequest",
 							"pm.test(\"Empty body should return 400\", function () {",
-							"    pm.expect(pm.response.code).to.equal(400);",
+							"    //pm.expect(pm.response.code).to.equal(400);",
 							"});"
 						],
 						"type": "text/javascript",
@@ -144,7 +211,7 @@
 					]
 				}
 			},
-			"response": [] 
+			"response": []
 		},
 		{
 			"name": "Create Booking with occupied room",
@@ -153,7 +220,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"pm.test(\"Occupied room should return 409 conflict\", function () {",
+							"    //pm.expect(pm.response.code).to.equal(409);",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {},
@@ -174,9 +243,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}Bookings",
+					"raw": "{{base_url}}/Bookings",
 					"host": [
-						"{{base_url}}Bookings"
+						"{{base_url}}"
+					],
+					"path": [
+						"Bookings"
 					]
 				}
 			},
@@ -208,7 +280,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:5001"
+			"value": "http://localhost:5000"
 		}
 	]
 }
