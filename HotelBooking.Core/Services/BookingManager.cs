@@ -36,41 +36,55 @@ namespace HotelBooking.Core
 
         public async Task<int> FindAvailableRoom(DateTime startDate, DateTime endDate)
         {
+            // Decision 1: Date validation
             if (startDate <= DateTime.Today || startDate > endDate) 
                 throw new ArgumentException("The start date cannot be in the past or later than the end date.");
-
+    
+            // Get data from repositories
             var bookings = await bookingRepository.GetAllAsync();
             var activeBookings = bookings.Where(b => b.IsActive);
             var rooms = await roomRepository.GetAllAsync();
+    
+            // Decision 2: Loop through rooms
             foreach (var room in rooms)
             {
                 var activeBookingsForCurrentRoom = activeBookings.Where(b => b.RoomId == room.Id);
-                if (activeBookingsForCurrentRoom.All(b => startDate < b.StartDate &&
-                    endDate < b.StartDate || startDate > b.EndDate && endDate > b.EndDate))
+        
+                // Decision 3: Check booking overlap
+                if (activeBookingsForCurrentRoom.All(b => 
+                        startDate < b.StartDate && endDate < b.StartDate || 
+                        startDate > b.EndDate && endDate > b.EndDate))
                 {
-                    return room.Id;
+                    return room.Id;  // Room available
                 }
             }
-            return -1;
+            return -1;  // No room available
         }
 
         public async Task<List<DateTime>> GetFullyOccupiedDates(DateTime startDate, DateTime endDate)
         {
+            // Decision 1: Date validation
             if (startDate > endDate)
                 throw new ArgumentException("The start date cannot be later than the end date.");
-
+    
+            // Initialize
             List<DateTime> fullyOccupiedDates = new List<DateTime>();
             var rooms = await roomRepository.GetAllAsync();
             int noOfRooms = rooms.Count();
             var bookings = await bookingRepository.GetAllAsync();
-
+    
+            // Decision 2: Check if any bookings
             if (bookings.Any())
             {
+                // Decision 3: Loop through each date
                 for (DateTime d = startDate; d <= endDate; d = d.AddDays(1))
                 {
+                    // Decision 4: Count active bookings for date
                     var noOfBookings = from b in bookings
-                                       where b.IsActive && d >= b.StartDate && d <= b.EndDate
-                                       select b;
+                        where b.IsActive && d >= b.StartDate && d <= b.EndDate
+                        select b;
+            
+                    // Decision 5: Check if fully occupied
                     if (noOfBookings.Count() >= noOfRooms)
                         fullyOccupiedDates.Add(d);
                 }

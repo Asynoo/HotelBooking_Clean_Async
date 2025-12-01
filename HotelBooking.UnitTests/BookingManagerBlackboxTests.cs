@@ -7,7 +7,7 @@ using Xunit;
 
 namespace HotelBooking.UnitTests;
 
-public class BookingManagerAsyncTests
+public class BookingManagerBlackboxTests
 {
     private readonly IBookingManager _bookingManager;
     private readonly Mock<IRepository<Booking>> _bookingRepoMock;
@@ -16,7 +16,7 @@ public class BookingManagerAsyncTests
     private readonly Mock<IRepository<Room>> _roomRepoMock;
     private readonly DateTime _today;
 
-    public BookingManagerAsyncTests()
+    public BookingManagerBlackboxTests()
     {
         _roomRepoMock = new Mock<IRepository<Room>>();
         _bookingRepoMock = new Mock<IRepository<Booking>>();
