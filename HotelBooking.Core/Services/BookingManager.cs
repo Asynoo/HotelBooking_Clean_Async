@@ -36,7 +36,7 @@ namespace HotelBooking.Core
 
         public async Task<int> FindAvailableRoom(DateTime startDate, DateTime endDate)
         {
-            if (startDate <= DateTime.Today || startDate > endDate)
+            if (startDate <= DateTime.Today || startDate > endDate) 
                 throw new ArgumentException("The start date cannot be in the past or later than the end date.");
 
             var bookings = await bookingRepository.GetAllAsync();
