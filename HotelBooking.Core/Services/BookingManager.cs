@@ -80,6 +80,7 @@ namespace HotelBooking.Core
                 for (DateTime d = startDate; d <= endDate; d = d.AddDays(1))
                 {
                     // Decision 4: Count active bookings for date
+                    // MCC Tested Condition: b.IsActive && d >= b.StartDate && d <= b.EndDate
                     var noOfBookings = from b in bookings
                         where b.IsActive && d >= b.StartDate && d <= b.EndDate
                         select b;

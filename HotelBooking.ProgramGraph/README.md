@@ -86,19 +86,11 @@ We used **basis path testing** where:
 5. **Test 5:** Covers Path 8-9-10-11-12-13-15-(loop)-16-17 - Multiple dates fully occupied
 6. **Test 6:** Covers Path 8-9-10-11-12-13-15-(all dates)-16-17 - All dates fully occupied
 
-## 4. Visual Representation in Draw.io Files
+## 4. Multiple Condition Coverage (MCC) Implementation
 
-In the provided XML files:
-- **Rectangles** represent sequential process blocks (the processing part of a DD-path)
-- **Diamonds** represent decision nodes (the start/end of a DD-path)
-- **Arrows** represent control flow between nodes
-- **Ellipses** represent return/exit points
+Following the assignment guidance for complex decisions, we applied **Multiple Condition Coverage (MCC)** to the `GetFullyOccupiedDates` method, specifically testing the LINQ filter condition:
 
-## 5. How These Support the Assignment Requirements
-
-1. **Test Case Derivation:** The DD-paths directly map to the 11 test cases implemented
-2. **Cyclomatic Complexity:** Calculated as 5 and 6 from decision points using basis path testing
-3. **White-box Techniques:** Basis path testing ensures minimum test coverage
-4. **Code Modeling:** Graphs accurately represent the actual code structure
-
-**Implementation:** The test file `BookingManagerWhiteboxTests.cs` contains exactly 11 tests (5 + 6) implementing this white-box analysis.
+```csharp
+where b.IsActive && d >= b.StartDate && d <= b.EndDate
+```
+#
