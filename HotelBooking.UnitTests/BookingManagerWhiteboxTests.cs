@@ -129,7 +129,7 @@ public class BookingManagerWhiteboxTests
         Assert.Equal(-1, result);
     }
 
-    // ================ GetFullyOccupiedDates Tests (7 paths) ================
+    // ================ GetFullyOccupiedDates Tests (6 paths) ================
 
     [Fact]
     public async Task GetFullyOccupiedDates_InvalidDates_ThrowsArgumentException()
