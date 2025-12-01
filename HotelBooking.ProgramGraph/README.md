@@ -23,13 +23,13 @@ A DD-path is an execution path between two decision nodes (or start/exit nodes).
 | 11      | Return -1           | End                 | Exit with -1 (no room available)                                  |
 
 **Cyclomatic Complexity Calculation:**
-
 - Decision Points:
-  1. `if (startDate <= DateTime.Today || startDate > endDate)`
-  2. `foreach (var room in rooms)` (implicit entry/exit)
-  3. `if (activeBookingsForCurrentRoom.All(...))`
-  4. Implicit: continue loop or exit
-- V(G) = Number of binary decisions + 1 = 4 + 1 = **5**
+    1. `if (startDate <= DateTime.Today || startDate > endDate)` - 1 decision
+    2. `foreach (var room in rooms)` - Implicit loop decision
+    3. `if (activeBookingsForCurrentRoom.All(...))` - 1 decision
+- **V(G) = Number of decisions + 1 = 3 + 1 = 4**
+
+**Result: V(G) = 4**
 
 ## 2. DD-Paths for GetFullyOccupiedDates
 
@@ -56,41 +56,52 @@ A DD-path is an execution path between two decision nodes (or start/exit nodes).
 | 17      | Return List                | End                        | Exit with fully occupied dates list                 |
 
 **Cyclomatic Complexity Calculation:**
-
 - Decision Points:
-  1. `if (startDate > endDate)`
-  2. `if (bookings.Any())`
-  3. `for (DateTime d = startDate; d <= endDate; ...)` (loop condition)
-  4. LINQ `where b.IsActive && ...` (implicit filtering)
-  5. `if (noOfBookings.Count() >= noOfRooms)`
-- V(G) = Number of binary decisions + 1 = 5 + 1 = **6**
+    1. `if (startDate > endDate)` - 1 decision
+    2. `if (bookings.Any())` - 1 decision
+    3. `for (DateTime d = startDate; d <= endDate; ...)` - Loop condition (1 decision)
+    4. `if (noOfBookings.Count() >= noOfRooms)` - 1 decision
+- **V(G) = Number of decisions + 1 = 4 + 1 = 5**
+
+**Result: V(G) = 5**
 
 ## 3. White-box Test Derivation
 
 ### Basis Path Testing Methodology:
 
 We used **basis path testing** where:
-
 - **Minimum tests required = Cyclomatic Complexity (V(G))**
 - Each test covers an **independent execution path**
 - Tests derived directly from **DD-path analysis**
 
-### FindAvailableRoom Test Mapping (5 tests for V(G) = 5):
+### FindAvailableRoom Test Mapping (5 tests for V(G) = 4):
 
-1. **Test 1:** Covers Path 2-3 - Invalid dates (past date)
-2. **Test 2:** Covers Path 2-3 - Invalid dates (start > end)
-3. **Test 3:** Covers Path 4-5-6-9-10-11 - No rooms available
-4. **Test 4:** Covers Path 4-5-6-7-8 - Room available
-5. **Test 5:** Covers Path 4-5-6-9-(loop)-10-11 - All rooms booked
+1. **FindAvailableRoom_PastStartDate_ThrowsArgumentException** - Covers Path 2-3 (Invalid dates: past date)
+2. **FindAvailableRoom_StartDateAfterEndDate_ThrowsArgumentException** - Covers Path 2-3 (Invalid dates: start > end)
+3. **FindAvailableRoom_NoRoomsAvailable_ReturnsMinusOne** - Covers Path 4-5-6-9-10-11 (No rooms available)
+4. **FindAvailableRoom_RoomAvailable_ReturnsRoomId** - Covers Path 4-5-6-7-8 (Room available)
+5. **FindAvailableRoom_AllRoomsBooked_ReturnsMinusOne** - Covers Path 4-5-6-9-(loop)-10-11 (All rooms booked)
 
-### GetFullyOccupiedDates Test Mapping (6 tests for V(G) = 6):
+**Note:** Tests 1 & 2 both cover the same basis path (Path 2-3) but test different invalid date conditions.
 
-1. **Test 1:** Covers Path 2-3 - Invalid dates
-2. **Test 2:** Covers Path 6-7 - No bookings
-3. **Test 3:** Covers Path 8-9-10-11-14-15-16-17 - Partial occupancy (no dates fully occupied)
-4. **Test 4:** Covers Path 8-9-10-11-12-13-15-16-17 - Single date fully occupied
-5. **Test 5:** Covers Path 8-9-10-11-12-13-15-(loop)-16-17 - Multiple dates fully occupied
-6. **Test 6:** Covers Path 8-9-10-11-12-13-15-(all dates)-16-17 - All dates fully occupied
+### GetFullyOccupiedDates Test Mapping (11 tests total: 6 basis + 5 MCC):
+
+**Basis path tests (6 tests):**
+1. **GetFullyOccupiedDates_InvalidDates_ThrowsArgumentException** - Covers Path 2-3
+2. **GetFullyOccupiedDates_NoBookings_ReturnsEmptyList** - Covers Path 6-7
+3. **GetFullyOccupiedDates_PartialOccupancy_ReturnsEmptyList** - Covers Path 8-9-10-11-14-15-16-17
+4. **GetFullyOccupiedDates_SingleFullyOccupiedDate_ReturnsThatDate** - Covers Path 8-9-10-11-12-13-15-16-17
+5. **GetFullyOccupiedDates_MultipleFullyOccupiedDates_ReturnsThoseDates** - Covers Path 8-9-10-11-12-13-15-(loop)-16-17
+6. **GetFullyOccupiedDates_AllDatesFullyOccupied_ReturnsAllDates** - Covers Path 8-9-10-11-12-13-15-(all dates)-16-17
+
+**MCC tests (5 tests):**
+7. **GetFullyOccupiedDates_MCC_AllConditionsTrue_IncludedInCount** - Tests Case 1: T,T,T
+8. **GetFullyOccupiedDates_MCC_ActiveTrue_DateAfterEnd_False** - Tests Case 2: T,T,F
+9. **GetFullyOccupiedDates_MCC_ActiveTrue_DateBeforeStart_False** - Tests Case 3: T,F,T
+10. **GetFullyOccupiedDates_MCC_InactiveBooking_False** - Tests Case 5: F,T,T
+11. **GetFullyOccupiedDates_MCC_ActiveTrue_DateOutsideRangeBoth_False** - Tests Cases 4/8: T,F,F / F,F,F
+
+**Total tests: 16 (5 for FindAvailableRoom + 11 for GetFullyOccupiedDates)**
 
 ## 4. Multiple Condition Coverage (MCC) Implementation
 
