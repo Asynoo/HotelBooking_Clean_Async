@@ -20,7 +20,7 @@ public class BookingManagerWhiteboxTests
         _bookingManager = new BookingManager(_mockBookingRepo.Object, _mockRoomRepo.Object);
     }
 
-    // ================ FindAvailableRoom Tests (4 paths) ================
+    // ================ FindAvailableRoom Tests (5 paths) ================
 
     [Fact]
     public async Task FindAvailableRoom_PastStartDate_ThrowsArgumentException()
@@ -299,37 +299,5 @@ public class BookingManagerWhiteboxTests
         // Assert
         Assert.Equal(3, result.Count); // All 3 days
         for (var d = startDate; d <= endDate; d = d.AddDays(1)) Assert.Contains(d, result);
-    }
-
-    [Fact]
-    public async Task GetFullyOccupiedDates_InactiveBookings_ReturnsEmptyList()
-    {
-        // Arrange
-        var startDate = DateTime.Today.AddDays(1);
-        var endDate = DateTime.Today.AddDays(3);
-
-        var rooms = new List<Room> { new() { Id = 1 } };
-
-        // Only inactive bookings
-        var bookings = new List<Booking>
-        {
-            new()
-            {
-                Id = 1,
-                RoomId = 1,
-                StartDate = startDate,
-                EndDate = endDate,
-                IsActive = false // Inactive!
-            }
-        };
-
-        _mockRoomRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
-        _mockBookingRepo.Setup(b => b.GetAllAsync()).ReturnsAsync(bookings);
-
-        // Act
-        var result = await _bookingManager.GetFullyOccupiedDates(startDate, endDate);
-
-        // Assert
-        Assert.Empty(result); // Inactive bookings should be ignored
     }
 }

@@ -1,6 +1,6 @@
 # White-box Analysis Using DD-Path Graphs
 
-In the corrected graphs, sequential statements (linear code without branching) are grouped into single nodes. This is the standard DD-path representation: each node represents a process block, and edges connect decision nodes, forming the complete DD-path structure.
+In the provided graphs, sequential statements (linear code without branching) are grouped into single nodes. This is the standard DD-path representation: each node represents a process block, and edges connect decision nodes, forming the complete DD-path structure.
 
 ## 1. DD-Paths for FindAvailableRoom
 
@@ -21,8 +21,6 @@ A DD-path is an execution path between two decision nodes (or start/exit nodes).
 | 9 | Check Room Bookings | Loop (Foreach) | False: Room has overlapping bookings, continue to next room |
 | 10 | Loop (Foreach) | Return -1 | Done: No more rooms, loop finished |
 | 11 | Return -1 | End | Exit with -1 (no room available) |
-
-**Key Correction:** The first decision node should represent **BOTH conditions**: `startDate <= DateTime.Today OR startDate > endDate`, not just `startDate > endDate`.
 
 **Cyclomatic Complexity Calculation:**
 - Decision Points:
@@ -56,8 +54,6 @@ A DD-path is an execution path between two decision nodes (or start/exit nodes).
 | 16 | Decision (d <= endDate?) | Return List | False: Loop finished |
 | 17 | Return List | End | Exit with fully occupied dates list |
 
-**Key Correction:** The `bookings.Any()` check returns false when there are NO bookings OR when all bookings are inactive (since we filter for `b.IsActive` in the LINQ query).
-
 **Cyclomatic Complexity Calculation:**
 - Decision Points:
     1. `if (startDate > endDate)`
@@ -90,9 +86,9 @@ We used **basis path testing** where:
 5. **Test 5:** Covers Path 8-9-10-11-12-13-15-(loop)-16-17 - Multiple dates fully occupied
 6. **Test 6:** Covers Path 8-9-10-11-12-13-15-(all dates)-16-17 - All dates fully occupied
 
-## 4. Visual Representation in Corrected Draw.io Files
+## 4. Visual Representation in Draw.io Files
 
-In the corrected XML files:
+In the provided XML files:
 - **Rectangles** represent sequential process blocks (the processing part of a DD-path)
 - **Diamonds** represent decision nodes (the start/end of a DD-path)
 - **Arrows** represent control flow between nodes
@@ -101,7 +97,7 @@ In the corrected XML files:
 ## 5. How These Support the Assignment Requirements
 
 1. **Test Case Derivation:** The DD-paths directly map to the 11 test cases implemented
-2. **Cyclomatic Complexity:** Correctly calculated as 5 and 6 from decision points
+2. **Cyclomatic Complexity:** Calculated as 5 and 6 from decision points using basis path testing
 3. **White-box Techniques:** Basis path testing ensures minimum test coverage
 4. **Code Modeling:** Graphs accurately represent the actual code structure
 
