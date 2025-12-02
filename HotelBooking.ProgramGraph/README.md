@@ -84,7 +84,7 @@ We used **basis path testing** where:
 
 **Note:** Tests 1 & 2 both cover the same basis path (Path 2-3) but test different invalid date conditions.
 
-### GetFullyOccupiedDates Test Mapping (11 tests total: 6 basis + 5 MCC):
+### GetFullyOccupiedDates Test Mapping (11 tests total: 6 basis + 6 MCC):
 
 **Basis path tests (6 tests):**
 1. **GetFullyOccupiedDates_InvalidDates_ThrowsArgumentException** - Covers Path 2-3
@@ -94,14 +94,15 @@ We used **basis path testing** where:
 5. **GetFullyOccupiedDates_MultipleFullyOccupiedDates_ReturnsThoseDates** - Covers Path 8-9-10-11-12-13-15-(loop)-16-17
 6. **GetFullyOccupiedDates_AllDatesFullyOccupied_ReturnsAllDates** - Covers Path 8-9-10-11-12-13-15-(all dates)-16-17
 
-**MCC tests (5 tests):**
+**MCC tests (6 tests for 6 combinations):**
 7. **GetFullyOccupiedDates_MCC_AllConditionsTrue_IncludedInCount** - Tests Case 1: T,T,T
 8. **GetFullyOccupiedDates_MCC_ActiveTrue_DateAfterEnd_False** - Tests Case 2: T,T,F
-9. **GetFullyOccupiedDates_MCC_ActiveTrue_DateBeforeStart_False** - Tests Case 3: T,F,T
+9. **GetFullyOccupiedDates_MCC_ActiveTrue_DateBeforeStartButBeforeEnd_False** - Tests Case 3: T,F,T
 10. **GetFullyOccupiedDates_MCC_InactiveBooking_False** - Tests Case 5: F,T,T
-11. **GetFullyOccupiedDates_MCC_ActiveTrue_DateOutsideRangeBoth_False** - Tests Cases 4/8: T,F,F / F,F,F
+11. **GetFullyOccupiedDates_MCC_InactiveDateAfterEnd_False** - Tests Case 6: F,T,F
+12. **GetFullyOccupiedDates_MCC_InactiveDateBeforeStart_False** - Tests Case 7: F,F,T
 
-**Total tests: 16 (5 for FindAvailableRoom + 11 for GetFullyOccupiedDates)**
+**Total tests: 18 (5 for FindAvailableRoom + 12 for GetFullyOccupiedDates)**
 
 ## 4. Multiple Condition Coverage (MCC) Implementation
 

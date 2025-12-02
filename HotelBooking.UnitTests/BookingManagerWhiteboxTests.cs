@@ -306,7 +306,7 @@ public class BookingManagerWhiteboxTests
     [Fact]
     public async Task GetFullyOccupiedDates_MCC_AllConditionsTrue_IncludedInCount()
     {
-        // Arrange: C1=T, C2=T, C3=T (Active=true, Date within range)
+        // Arrange: Case 1 - T,T,T (Active=true, Date within range)
         var startDate = DateTime.Today.AddDays(1);
         var endDate = DateTime.Today.AddDays(3);
         var testDate = DateTime.Today.AddDays(2);
@@ -339,7 +339,7 @@ public class BookingManagerWhiteboxTests
     [Fact]
     public async Task GetFullyOccupiedDates_MCC_ActiveTrue_DateAfterEnd_False()
     {
-        // Arrange: C1=T, C2=T, C3=F (Active=true, Date after end)
+        // Arrange: Case 2 - T,T,F (Active=true, Date after end)
         var bookingStart = DateTime.Today.AddDays(1);
         var bookingEnd = DateTime.Today.AddDays(3);
         var queryDate = DateTime.Today.AddDays(4); // After booking end
@@ -369,9 +369,9 @@ public class BookingManagerWhiteboxTests
     }
 
     [Fact]
-    public async Task GetFullyOccupiedDates_MCC_ActiveTrue_DateBeforeStart_False()
+    public async Task GetFullyOccupiedDates_MCC_ActiveTrue_DateBeforeStartButBeforeEnd_False()
     {
-        // Arrange: C1=T, C2=F, C3=T (Active=true, Date before start)
+        // Arrange: Case 3 - T,F,T (Active=true, Date before start but before/on end)
         var bookingStart = DateTime.Today.AddDays(3);
         var bookingEnd = DateTime.Today.AddDays(5);
         var queryDate = DateTime.Today.AddDays(2); // Before booking starts
@@ -403,7 +403,7 @@ public class BookingManagerWhiteboxTests
     [Fact]
     public async Task GetFullyOccupiedDates_MCC_InactiveBooking_False()
     {
-        // Arrange: C1=F, C2=T, C3=T (Inactive booking, date within range)
+        // Arrange: Case 5 - F,T,T (Inactive booking, date within range)
         var startDate = DateTime.Today.AddDays(1);
         var endDate = DateTime.Today.AddDays(3);
         
@@ -433,17 +433,16 @@ public class BookingManagerWhiteboxTests
     }
 
     [Fact]
-    public async Task GetFullyOccupiedDates_MCC_ActiveTrue_DateOutsideRangeBoth_False()
+    public async Task GetFullyOccupiedDates_MCC_InactiveDateAfterEnd_False()
     {
-        // Arrange: C1=T, C2=F, C3=F (Active=true, date completely outside range)
-        var bookingStart = DateTime.Today.AddDays(5);
-        var bookingEnd = DateTime.Today.AddDays(7);
-        var queryStart = DateTime.Today.AddDays(1);
-        var queryEnd = DateTime.Today.AddDays(3);
+        // Arrange: Case 6 - F,T,F (Inactive, date after end)
+        var bookingStart = DateTime.Today.AddDays(1);
+        var bookingEnd = DateTime.Today.AddDays(3);
+        var queryDate = DateTime.Today.AddDays(4); // After booking end
         
         var rooms = new List<Room> { new() { Id = 1 } };
         
-        // Active booking, but completely different date range
+        // Inactive booking, date is after booking end
         var bookings = new List<Booking>
         {
             new()
@@ -452,17 +451,50 @@ public class BookingManagerWhiteboxTests
                 RoomId = 1,
                 StartDate = bookingStart,
                 EndDate = bookingEnd,
-                IsActive = true
+                IsActive = false  // Inactive!
             }
         };
         
         _mockRoomRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
         _mockBookingRepo.Setup(b => b.GetAllAsync()).ReturnsAsync(bookings);
         
-        // Act: Query different date range
-        var result = await _bookingManager.GetFullyOccupiedDates(queryStart, queryEnd);
+        // Act: Check date after booking ends (inactive booking)
+        var result = await _bookingManager.GetFullyOccupiedDates(queryDate, queryDate);
         
-        // Assert: No overlap, should be empty
+        // Assert: Should NOT be included (empty list)
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetFullyOccupiedDates_MCC_InactiveDateBeforeStart_False()
+    {
+        // Arrange: Case 7 - F,F,T (Inactive, date before start)
+        var bookingStart = DateTime.Today.AddDays(3);
+        var bookingEnd = DateTime.Today.AddDays(5);
+        var queryDate = DateTime.Today.AddDays(2); // Before booking starts
+        
+        var rooms = new List<Room> { new() { Id = 1 } };
+        
+        // Inactive booking, date is before booking start
+        var bookings = new List<Booking>
+        {
+            new()
+            {
+                Id = 1,
+                RoomId = 1,
+                StartDate = bookingStart,
+                EndDate = bookingEnd,
+                IsActive = false  // Inactive!
+            }
+        };
+        
+        _mockRoomRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(rooms);
+        _mockBookingRepo.Setup(b => b.GetAllAsync()).ReturnsAsync(bookings);
+        
+        // Act: Check date before booking starts (inactive booking)
+        var result = await _bookingManager.GetFullyOccupiedDates(queryDate, queryDate);
+        
+        // Assert: Should NOT be included
         Assert.Empty(result);
     }
 }
