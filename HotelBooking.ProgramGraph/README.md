@@ -129,9 +129,9 @@ where b.IsActive && d >= b.StartDate && d <= b.EndDate
 
 #### Simplelify the MCC table
 
-| Case | b.IsActive | d >= b.StartDate | d <= b.EndDate | b.IsActive && d >= b.StartDate && d <= b.EndDate (Result) | Description                                                                                                                           |
-| :--: | :--------: | :--------------: | :------------: | :-------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------ |
-|  1   |     T      |        T         |       T        |                             T                             | **Active and within the date range.**                                                                                                 |
-|  2   |     T      |        T         |       F        |                             F                             | Active, started, but date $d$ is after EndDate.                                                                                       |
-|  3   |     T      |        F         |       -        |                             F                             | Active, date $d$ is before StartDate, but also before/on EndDate (this is impossible, as $d < \text{Start} \implies d < \text{End}$). |
-|  4   |     F      |        -         |       -        |                             F                             | Inactive, but within the date range.                                                                                                  |
+| Case | b.IsActive | d >= b.StartDate | d <= b.EndDate | b.IsActive && d >= b.StartDate && d <= b.EndDate (Result) |
+| :--: | :--------: | :--------------: | :------------: | :-------------------------------------------------------: |
+|  1   |     T      |        T         |       T        |                             T                             |
+|  2   |     T      |        T         |       F        |                             F                             |
+|  3   |     T      |        F         |       -        |                             F                             |
+|  4   |     F      |        -         |       -        |                             F                             |
