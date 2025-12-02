@@ -129,6 +129,10 @@ where b.IsActive && d >= b.StartDate && d <= b.EndDate
 
 #### Simplelify the MCC table
 
+Because the statement is all AND operation that if the privious condition is falsy, then don't need care about the next condition and the decition will be falsy.
+Therefore, we can simply skip the variant of the following condition.
+That reduce the Cyclomatic Complexity to 5.
+
 | Case | b.IsActive | d >= b.StartDate | d <= b.EndDate | b.IsActive && d >= b.StartDate && d <= b.EndDate (Result) |
 | :--: | :--------: | :--------------: | :------------: | :-------------------------------------------------------: |
 |  1   |     T      |        T         |       T        |                             T                             |
