@@ -126,3 +126,12 @@ where b.IsActive && d >= b.StartDate && d <= b.EndDate
 |  8   |     F      |        F         |       F        |                             F                             | Inactive, date $d$ is before StartDate and after EndDate (impossible).                                                                |
 
 ---
+
+#### Simplelify the MCC table
+
+| Case | b.IsActive | d >= b.StartDate | d <= b.EndDate | b.IsActive && d >= b.StartDate && d <= b.EndDate (Result) | Description                                                                                                                           |
+| :--: | :--------: | :--------------: | :------------: | :-------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------ |
+|  1   |     T      |        T         |       T        |                             T                             | **Active and within the date range.**                                                                                                 |
+|  2   |     T      |        T         |       F        |                             F                             | Active, started, but date $d$ is after EndDate.                                                                                       |
+|  3   |     T      |        F         |       -        |                             F                             | Active, date $d$ is before StartDate, but also before/on EndDate (this is impossible, as $d < \text{Start} \implies d < \text{End}$). |
+|  4   |     F      |        -         |       -        |                             F                             | Inactive, but within the date range.                                                                                                  |
